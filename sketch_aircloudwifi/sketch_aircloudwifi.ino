@@ -125,6 +125,16 @@ void setup() {
   FastLED.show();
   delay(2000);  
 
+  for (int j = 0; j < 256; j++) {
+    for (int i = NUM_LEDS; i > 0; i--) {
+      // Turn the LED on, then pause
+      leds[i].setHSV( j, 255, 255);
+      FastLED.show();
+      delay(50);
+      Serial.println(j);
+    }
+    j = j + 25;
+  }
   Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
   timerDelay = 5000;
 }
@@ -223,7 +233,7 @@ void loop() {
                   leds[i].setHSV( mappedValue, 255, 255);
                 }
                 FastLED.show();
-                delay(750);
+                delay(500);
                 counting_up = counting_up + 1;
               }
               count_remaining = count_remaining - 1;
