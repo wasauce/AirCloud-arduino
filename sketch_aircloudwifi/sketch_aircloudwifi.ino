@@ -2,9 +2,58 @@
 William Ferrell
 */
 
+// All 3 relate to ESPAsync_WifiManager_Lite
+#include "defines.h"
+#include "Credentials.h"
+#include "dynamicParams.h"
+
+
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Arduino_JSON.h>
+
+
+void heartBeatPrint()
+{
+  static int num = 1;
+
+  if (WiFi.status() == WL_CONNECTED)
+    Serial.print(F("H"));        // H means connected to WiFi
+  else
+    Serial.print(F("F"));        // F means not connected to WiFi
+
+  if (num == 80)
+  {
+    Serial.println();
+    num = 1;
+  }
+  else if (num++ % 10 == 0)
+  {
+    Serial.print(F(" "));
+  }
+}
+
+void check_status()
+{
+  static unsigned long checkstatus_timeout = 0;
+
+  //KH
+#define HEARTBEAT_INTERVAL    20000L
+  // Print hearbeat every HEARTBEAT_INTERVAL (20) seconds.
+  if ((millis() > checkstatus_timeout) || (checkstatus_timeout == 0))
+  {
+    heartBeatPrint();
+    checkstatus_timeout = millis() + HEARTBEAT_INTERVAL;
+  }
+}
+
+ESPAsync_WiFiManager_Lite* ESPAsync_WiFiManager;
+
+#if USING_CUSTOMS_STYLE
+const char NewCustomsStyle[] /*PROGMEM*/ = "<style>div,input{padding:5px;font-size:1em;}input{width:95%;}body{text-align: center;}\
+button{background-color:blue;color:white;line-height:2.4rem;font-size:1.2rem;width:100%;}fieldset{border-radius:0.3rem;margin:0px;}</style>";
+#endif
+
 
 const char* ssid = "Unit 504";
 const char* password = "3.141504";
@@ -40,6 +89,8 @@ float sensorReadingsArr[3];
 
 #define MAX_BRIGHTNESS 10
 
+#define LOCAL_DEBUG       true  //false
+
 // Define the array of leds
 CRGB leds[NUM_LEDS];
 
@@ -50,7 +101,40 @@ CRGB leds4[NUM_LEDS1];
 
 
 void setup() {
+
   Serial.begin(115200);
+  Serial.print(F("\nStarting ESPAsync_WiFi using ")); Serial.print(FS_Name);
+  Serial.print(F(" on ")); Serial.println(ARDUINO_BOARD);
+  Serial.println(ESP_ASYNC_WIFI_MANAGER_LITE_VERSION);
+
+#if USING_MRD  
+  Serial.println(ESP_MULTI_RESET_DETECTOR_VERSION);
+#else
+  Serial.println(ESP_DOUBLE_RESET_DETECTOR_VERSION);
+#endif
+
+  ESPAsync_WiFiManager = new ESPAsync_WiFiManager_Lite();
+
+  // Optional to change default AP IP(192.168.4.1) and channel(10)
+  //ESPAsync_WiFiManager->setConfigPortalIP(IPAddress(192, 168, 120, 1));
+  //ESPAsync_WiFiManager->setConfigPortalChannel(0);
+
+#if USING_CUSTOMS_STYLE
+  ESPAsync_WiFiManager->setCustomsStyle(NewCustomsStyle);
+#endif
+
+#if USING_CUSTOMS_HEAD_ELEMENT
+  ESPAsync_WiFiManager->setCustomsHeadElement("<style>html{filter: invert(10%);}</style>");
+#endif
+
+#if USING_CORS_FEATURE  
+  ESPAsync_WiFiManager->setCORSHeader("Your Access-Control-Allow-Origin");
+#endif
+
+  // Set customized DHCP HostName
+  ESPAsync_WiFiManager->begin("AirCloudWIFI");
+  //Or use default Hostname "NRF52-WIFI-XXXXXX"
+  //ESPAsync_WiFiManager->begin();
 
   FastLED.addLeds<NEOPIXEL, SIGNAL_PIN>(leds, NUM_LEDS); // strip 1
   FastLED.addLeds<NEOPIXEL, PWR_PIN>(leds1, NUM_LEDS1); // strip 1
@@ -64,348 +148,396 @@ void setup() {
 
   FastLED.show();
 
-  WiFi.begin(ssid, password);
-  Serial.println("Connecting");
-  while(WiFi.status() != WL_CONNECTED) {
-    Serial.println("No Wifi");
-  }
-  Serial.println("");
-  Serial.print("Connected to WiFi network with IP Address: ");
-  Serial.println(WiFi.localIP());
-  leds2[0] = CRGB::Green;
-  FastLED.show();
-
-  // Now iterate through the various colors.
-  for (int i = 0; i < NUM_LEDS; i++) {
-    // Turn the LED on, then pause
-    leds[i] = CRGB::Green;
-  }
-  FastLED.show();
-  delay(2000);
-  // Now iterate through the various colors.
-  for (int i = 0; i < NUM_LEDS; i++) {
-    // Turn the LED on, then pause
-    leds[i] = CRGB::YellowGreen;
-  }
-  FastLED.show();
-  delay(2000);
-  // Now iterate through the various colors.
-  for (int i = 0; i < NUM_LEDS; i++) {
-    // Turn the LED on, then pause
-    leds[i] = CRGB::Orange;
-  }
-  FastLED.show();
-  delay(2000);
-  // Now iterate through the various colors.
-  for (int i = 0; i < NUM_LEDS; i++) {
-    // Turn the LED on, then pause
-    leds[i] = CRGB::Red;
-  }
-  FastLED.show();
-  delay(2000);
-  // Now iterate through the various colors.
-  for (int i = 0; i < NUM_LEDS; i++) {
-    // Turn the LED on, then pause
-    leds[i] = CRGB::Purple;
-  }
-  FastLED.show();
-  delay(2000);
-  // Now iterate through the various colors.
-  for (int i = 0; i < NUM_LEDS; i++) {
-    // Turn the LED on, then pause
-    leds[i] = CRGB::Maroon;
-  }
-  FastLED.show();
-  delay(2000);  
-  // Now iterate through the various colors.
-  for (int i = 0; i < NUM_LEDS; i++) {
-    // Turn the LED on, then pause
-    leds[i] = CRGB::Black;
-  }
-  FastLED.show();
-  delay(2000);  
-
-  for (int j = 0; j < 256; j++) {
-    for (int i = NUM_LEDS; i > 0; i--) {
-      // Turn the LED on, then pause
-      leds[i].setHSV( j, 255, 255);
-      FastLED.show();
-      delay(50);
-      Serial.println(j);
-    }
-    j = j + 25;
-  }
+//  WiFi.begin(ssid, password);
+//  Serial.println("Connecting");
+//  while(WiFi.status() != WL_CONNECTED) {
+//    Serial.println("No Wifi");
+//  }
+//  Serial.println("");
+//  Serial.print("Connected to WiFi network with IP Address: ");
+//  Serial.println(WiFi.localIP());
+//  leds2[0] = CRGB::Green;
+//  FastLED.show();
+//
+//  // Now iterate through the various colors.
+//  for (int i = 0; i < NUM_LEDS; i++) {
+//    // Turn the LED on, then pause
+//    leds[i] = CRGB::Green;
+//  }
+//  FastLED.show();
+//  delay(2000);
+//  // Now iterate through the various colors.
+//  for (int i = 0; i < NUM_LEDS; i++) {
+//    // Turn the LED on, then pause
+//    leds[i] = CRGB::YellowGreen;
+//  }
+//  FastLED.show();
+//  delay(2000);
+//  // Now iterate through the various colors.
+//  for (int i = 0; i < NUM_LEDS; i++) {
+//    // Turn the LED on, then pause
+//    leds[i] = CRGB::Orange;
+//  }
+//  FastLED.show();
+//  delay(2000);
+//  // Now iterate through the various colors.
+//  for (int i = 0; i < NUM_LEDS; i++) {
+//    // Turn the LED on, then pause
+//    leds[i] = CRGB::Red;
+//  }
+//  FastLED.show();
+//  delay(2000);
+//  // Now iterate through the various colors.
+//  for (int i = 0; i < NUM_LEDS; i++) {
+//    // Turn the LED on, then pause
+//    leds[i] = CRGB::Purple;
+//  }
+//  FastLED.show();
+//  delay(2000);
+//  // Now iterate through the various colors.
+//  for (int i = 0; i < NUM_LEDS; i++) {
+//    // Turn the LED on, then pause
+//    leds[i] = CRGB::Maroon;
+//  }
+//  FastLED.show();
+//  delay(2000);  
+//  // Now iterate through the various colors.
+//  for (int i = 0; i < NUM_LEDS; i++) {
+//    // Turn the LED on, then pause
+//    leds[i] = CRGB::Black;
+//  }
+//  FastLED.show();
+//  delay(2000);  
+//
+//  for (int j = 0; j < 256; j++) {
+//    for (int i = NUM_LEDS; i > 0; i--) {
+//      // Turn the LED on, then pause
+//      leds[i].setHSV( j, 255, 255);
+//      FastLED.show();
+//      delay(50);
+//      Serial.println(j);
+//    }
+//    j = j + 25;
+//  }
   Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
   timerDelay = 5000;
 }
 
-void loop() {
-  //Send an HTTP POST request every 10 minutes
-  Serial.println("millis,  lastTime, timerDelay | START");
-  Serial.println(millis());
-  Serial.println(lastTime);
-  Serial.println(timerDelay);
-  Serial.println("millis,  lastTime, timerDelay | END");
-  if ((millis() - lastTime) > timerDelay) {
-    //Check WiFi connection status
-    if(WiFi.status()== WL_CONNECTED) {
-      Serial.println(serverName);
-      sensorReadings = httpGETRequest(serverName);
-      Serial.println("sensorReadings");
-      Serial.println(sensorReadings);
-      JSONVar myObject = JSON.parse(sensorReadings);
-  
-      // JSON.typeof(jsonVar) can be used to get the type of the var
-      if (JSON.typeof(myObject) == "undefined") {
-        Serial.println("Parsing input failed!");
-        leds4[0] = CRGB::Black;
-        FastLED.show();
-        delay(2000);
-        leds4[0] = CRGB::Red;
-        FastLED.show();
-        Serial.println("Show Red 1");
-        delay(500);
-        timerDelay = 5000;
-        return;
-      }
-    
-      Serial.print("JSON object = ");
-      Serial.println(myObject);
-    
-      // myObject.keys() can be used to get an array of all the keys in the object
-      JSONVar keys = myObject.keys();
-    
-      for (int i = 0; i < keys.length(); i++) {
-        leds3[0] = CRGB::Green;
-        FastLED.show();
-        delay(100);
-        leds3[0] = CRGB::Purple;
-        FastLED.show();
-        delay(200);
-        int value = myObject[keys[i]];
-        Serial.print(keys[i]);
-        Serial.print(" = ");
-        Serial.println(value);
-        JSONVar matchingValue = "aircloud_aqi";
-        if (keys[i] == matchingValue) {
-          Serial.println("value");
-          Serial.println(value);
-          if (value >= 0) {
-            // First we want to count up to show the units.
-            for (int i = 0; i < NUM_LEDS; i++) {
-              // Turn the LED on, then pause
-              leds[i] = CRGB::Black;
-            }
-            FastLED.show();
-            delay(100);
-            // Now set a color and after each we show
-            int count_remaining = value;
-//            Serial.println("count_remaining");
-//            Serial.println(count_remaining);
 
-            int counting_up = 0;
-            for (int i = NUM_LEDS; i > 0; i--) {
-              Serial.println(i);
-              // Turn the LED on, then pause
-              if (count_remaining >= 0) {
-                if (counting_up < 50) {
-                  int mappedValue = map(counting_up,0,50,96,64);
-                  Serial.println("counting_up mappedValue");
-                  Serial.println(mappedValue);
-                  leds[i].setHSV( mappedValue, 255, 255);
-                }
-                else if (value < 100) {
-                  int mappedValue = map(counting_up,50,100,64,32);
-                  Serial.println("counting_up mappedValue");
-                  Serial.println(mappedValue);
-                  leds[i].setHSV( mappedValue, 255, 255);
-                }
-                else if (value < 150) {
-                  int mappedValue = map(counting_up,100,150,32,0);
-                  Serial.println("counting_up mappedValue");
-                  Serial.println(mappedValue);
-                  leds[i].setHSV( mappedValue, 255, 255);
-                }
-                else if (value < 200) {
-                  int mappedValue = map(counting_up,150,200,255,224);
-                  Serial.println("counting_up mappedValue");
-                  Serial.println(mappedValue);
-                  leds[i].setHSV( mappedValue, 255, 255);
-                }
-                FastLED.show();
-                delay(500);
-                counting_up = counting_up + 1;
-              }
-              count_remaining = count_remaining - 1;
-//              Serial.println("count_remaining");
-//              Serial.println(count_remaining);
-            }
-            delay(10000);
-            if (value < 50) {
-              Serial.println("MAPPING");
-              int mappedValue = map(value,0,50,96,64);
-              Serial.println(mappedValue);
-              for (int i = 0; i < NUM_LEDS; i++) {
-                // Turn the LED on, then pause
-//                leds[i] = CRGB::Green;
-                  Serial.println("Set leds with setHSV");
-                  leds[i].setHSV( mappedValue, 255, 255);
-              }
-            }
-            else if (value < 100) {
-              Serial.println("MAPPING");
-              int mappedValue = map(value,50,100,64,32);
-              Serial.println(mappedValue);
-              for (int i = 0; i < NUM_LEDS; i++) {
-                // Turn the LED on, then pause
-                  Serial.println("Set leds with setHSV");
-                  leds[i].setHSV( mappedValue, 255, 255);
-              }
-            }
-            else if (value < 150) {
-              Serial.println("MAPPING");
-              int mappedValue = map(value,100,150,32,0);
-              Serial.println(mappedValue);
-              for (int i = 0; i < NUM_LEDS; i++) {
-                // Turn the LED on, then pause
-                  Serial.println("Set leds with setHSV");
-                  leds[i].setHSV( mappedValue, 255, 255);
-              }
-            }
-            else if (value < 200) {
-              Serial.println("MAPPING");
-              int mappedValue = map(value,150,200,255,224);
-              Serial.println(mappedValue);
-              for (int i = 0; i < NUM_LEDS; i++) {
-                // Turn the LED on, then pause
-                  Serial.println("Set leds with setHSV");
-                  leds[i].setHSV( mappedValue, 255, 255);
-              }
-            }
-            else if (value < 300) {
-              Serial.println("MAPPING");
-              int mappedValue = map(value,200,300,224,192);
-              Serial.println(mappedValue);
-              for (int i = 0; i < NUM_LEDS; i++) {
-                // Turn the LED on, then pause
-                  Serial.println("Set leds with setHSV");
-                  leds[i].setHSV( mappedValue, 255, 255);
-              }
-            }
-            else if (value >= 300) {
-              for (int i = 0; i < NUM_LEDS; i++) {
-                // Turn the LED on, then pause
-                leds[i] = CRGB::Maroon;
-              }
-            }
-            leds3[0] = CRGB::Green;
-            leds4[0] = CRGB::Black;
-            Serial.println("Setting isBadData to 0");
-            isBadData = 0;
-          }
-          else {
-            // Now I want to run the error flow so set the badData
-            Serial.println("Setting isBadData to 1");
-            isBadData = 1;
-            leds3[0] = CRGB::Black;
-            leds4[0] = CRGB::Red;
-          }
+#if USE_DYNAMIC_PARAMETERS
+void displayCredentials()
+{
+  Serial.println(F("\nYour stored Credentials :"));
 
-        }
-        FastLED.show();
-        delay(100);
-        timerDelay = 30000;
-        Serial.println(timerDelay);
-        Serial.println("Processed!");
-      }
-    }
-    else {
-      Serial.println("WiFi Disconnected");
-      leds4[0] = CRGB::Black;
-      FastLED.show();
-      delay(2000);
-      leds4[0] = CRGB::Red;
-      FastLED.show();
-      Serial.println("Show Red 2");
-      delay(500);
-      leds4[0] = CRGB::Black;
-      FastLED.show();
-      return;
-    }
-    lastTime = millis();
+  for (uint16_t i = 0; i < NUM_MENU_ITEMS; i++)
+  {
+    Serial.print(myMenuItems[i].displayName);
+    Serial.print(F(" = "));
+    Serial.println(myMenuItems[i].pdata);
   }
-  else {
-    Serial.println("isBadData");
-    Serial.println(isBadData);
-    if (isBadData == 1) {
-      Serial.println("Bad data");
-      rainbow_wave(10, 10);                                      // Speed, delta hue values.
-      FastLED.show();
-//      for (int i = 0; i < NUM_LEDS; i++) {
-//        // Turn the LED on, then pause
-//        leds[i] = CRGB::Red;
-//      }
-//      leds4[0] = CRGB::Red;
-//      FastLED.show();
-//      delay(50);
-//      leds4[0] = CRGB::Black;
-//      for (int i = 0; i < NUM_LEDS; i++) {
-//        // Turn the LED on, then pause
-//        leds[i] = CRGB::Black;
-//      }
-//      FastLED.show();
-//      delay(50);
-//      for (int i = 0; i < NUM_LEDS; i++) {
-//        // Turn the LED on, then pause
-//        leds[i] = CRGB::Red;
-//      }
-//      leds4[0] = CRGB::Red;
-//      FastLED.show();
-//      delay(50);
-
-    
-    
-    }
-    else {
-      float smoothness_pts = 500;//larger=slower change in brightness  
-      
-      float gamma = 0.14; // affects the width of peak (more or less darkness)
-      float beta = 0.5; // shifts the gaussian to be symmetric
-      Serial.println("Breathing");
-      for (int ii=0;ii<smoothness_pts;ii++){
-        float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
-        if (pwm_val < 8.0) {
-          pwm_val = 8.0;
-        }
-        FastLED.setBrightness(pwm_val);
-        FastLED.show();
-        delay(5);
-      }
-      Serial.println("Breathing");
-      for (int ii=0;ii<smoothness_pts;ii++){
-        float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
-        if (pwm_val < 8.0) {
-          pwm_val = 10.0;
-        }        
-        FastLED.setBrightness(pwm_val);
-        FastLED.show();
-        delay(5);
-      }
-      Serial.println("Breathing");
-      for (int ii=0;ii<smoothness_pts;ii++){
-        float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
-        if (pwm_val < 8.0) {
-          pwm_val = 8.0;
-        }        
-        FastLED.setBrightness(pwm_val);
-        FastLED.show();
-        delay(5);
-      }
-      delay(timerDelay);
-    }    
-  }
-
 }
+
+void displayCredentialsInLoop()
+{
+  static bool displayedCredentials = false;
+
+  if (!displayedCredentials)
+  {
+    for (int i = 0; i < NUM_MENU_ITEMS; i++)
+    {
+      if (!strlen(myMenuItems[i].pdata))
+      {
+        break;
+      }
+
+      if ( i == (NUM_MENU_ITEMS - 1) )
+      {
+        displayedCredentials = true;
+        displayCredentials();
+      }
+    }
+  }
+}
+
+#endif
+
+void loop()
+{
+  ESPAsync_WiFiManager->run();
+  check_status();
+
+#if USE_DYNAMIC_PARAMETERS
+  displayCredentialsInLoop();
+#endif
+}
+
+//void loop() {
+//  //Send an HTTP POST request every 10 minutes
+//  Serial.println("millis,  lastTime, timerDelay | START");
+//  Serial.println(millis());
+//  Serial.println(lastTime);
+//  Serial.println(timerDelay);
+//  Serial.println("millis,  lastTime, timerDelay | END");
+//  if ((millis() - lastTime) > timerDelay) {
+//    //Check WiFi connection status
+//    if(WiFi.status()== WL_CONNECTED) {
+//      Serial.println(serverName);
+//      sensorReadings = httpGETRequest(serverName);
+//      Serial.println("sensorReadings");
+//      Serial.println(sensorReadings);
+//      JSONVar myObject = JSON.parse(sensorReadings);
+//  
+//      // JSON.typeof(jsonVar) can be used to get the type of the var
+//      if (JSON.typeof(myObject) == "undefined") {
+//        Serial.println("Parsing input failed!");
+//        leds4[0] = CRGB::Black;
+//        FastLED.show();
+//        delay(2000);
+//        leds4[0] = CRGB::Red;
+//        FastLED.show();
+//        Serial.println("Show Red 1");
+//        delay(500);
+//        timerDelay = 5000;
+//        return;
+//      }
+//    
+//      Serial.print("JSON object = ");
+//      Serial.println(myObject);
+//    
+//      // myObject.keys() can be used to get an array of all the keys in the object
+//      JSONVar keys = myObject.keys();
+//    
+//      for (int i = 0; i < keys.length(); i++) {
+//        leds3[0] = CRGB::Green;
+//        FastLED.show();
+//        delay(100);
+//        leds3[0] = CRGB::Purple;
+//        FastLED.show();
+//        delay(200);
+//        int value = myObject[keys[i]];
+//        Serial.print(keys[i]);
+//        Serial.print(" = ");
+//        Serial.println(value);
+//        JSONVar matchingValue = "aircloud_aqi";
+//        if (keys[i] == matchingValue) {
+//          Serial.println("value");
+//          Serial.println(value);
+//          if (value >= 0) {
+//            // First we want to count up to show the units.
+//            for (int i = 0; i < NUM_LEDS; i++) {
+//              // Turn the LED on, then pause
+//              leds[i] = CRGB::Black;
+//            }
+//            FastLED.show();
+//            delay(100);
+//            // Now set a color and after each we show
+//            int count_remaining = value;
+////            Serial.println("count_remaining");
+////            Serial.println(count_remaining);
+//
+//            int counting_up = 0;
+//            for (int i = NUM_LEDS; i > 0; i--) {
+//              Serial.println(i);
+//              // Turn the LED on, then pause
+//              if (count_remaining >= 0) {
+//                if (counting_up < 50) {
+//                  int mappedValue = map(counting_up,0,50,96,64);
+//                  Serial.println("counting_up mappedValue");
+//                  Serial.println(mappedValue);
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//                }
+//                else if (value < 100) {
+//                  int mappedValue = map(counting_up,50,100,64,32);
+//                  Serial.println("counting_up mappedValue");
+//                  Serial.println(mappedValue);
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//                }
+//                else if (value < 150) {
+//                  int mappedValue = map(counting_up,100,150,32,0);
+//                  Serial.println("counting_up mappedValue");
+//                  Serial.println(mappedValue);
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//                }
+//                else if (value < 200) {
+//                  int mappedValue = map(counting_up,150,200,255,224);
+//                  Serial.println("counting_up mappedValue");
+//                  Serial.println(mappedValue);
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//                }
+//                FastLED.show();
+//                delay(500);
+//                counting_up = counting_up + 1;
+//              }
+//              count_remaining = count_remaining - 1;
+////              Serial.println("count_remaining");
+////              Serial.println(count_remaining);
+//            }
+//            delay(10000);
+//            if (value < 50) {
+//              Serial.println("MAPPING");
+//              int mappedValue = map(value,0,50,96,64);
+//              Serial.println(mappedValue);
+//              for (int i = 0; i < NUM_LEDS; i++) {
+//                // Turn the LED on, then pause
+////                leds[i] = CRGB::Green;
+//                  Serial.println("Set leds with setHSV");
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//              }
+//            }
+//            else if (value < 100) {
+//              Serial.println("MAPPING");
+//              int mappedValue = map(value,50,100,64,32);
+//              Serial.println(mappedValue);
+//              for (int i = 0; i < NUM_LEDS; i++) {
+//                // Turn the LED on, then pause
+//                  Serial.println("Set leds with setHSV");
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//              }
+//            }
+//            else if (value < 150) {
+//              Serial.println("MAPPING");
+//              int mappedValue = map(value,100,150,32,0);
+//              Serial.println(mappedValue);
+//              for (int i = 0; i < NUM_LEDS; i++) {
+//                // Turn the LED on, then pause
+//                  Serial.println("Set leds with setHSV");
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//              }
+//            }
+//            else if (value < 200) {
+//              Serial.println("MAPPING");
+//              int mappedValue = map(value,150,200,255,224);
+//              Serial.println(mappedValue);
+//              for (int i = 0; i < NUM_LEDS; i++) {
+//                // Turn the LED on, then pause
+//                  Serial.println("Set leds with setHSV");
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//              }
+//            }
+//            else if (value < 300) {
+//              Serial.println("MAPPING");
+//              int mappedValue = map(value,200,300,224,192);
+//              Serial.println(mappedValue);
+//              for (int i = 0; i < NUM_LEDS; i++) {
+//                // Turn the LED on, then pause
+//                  Serial.println("Set leds with setHSV");
+//                  leds[i].setHSV( mappedValue, 255, 255);
+//              }
+//            }
+//            else if (value >= 300) {
+//              for (int i = 0; i < NUM_LEDS; i++) {
+//                // Turn the LED on, then pause
+//                leds[i] = CRGB::Maroon;
+//              }
+//            }
+//            leds3[0] = CRGB::Green;
+//            leds4[0] = CRGB::Black;
+//            Serial.println("Setting isBadData to 0");
+//            isBadData = 0;
+//          }
+//          else {
+//            // Now I want to run the error flow so set the badData
+//            Serial.println("Setting isBadData to 1");
+//            isBadData = 1;
+//            leds3[0] = CRGB::Black;
+//            leds4[0] = CRGB::Red;
+//          }
+//
+//        }
+//        FastLED.show();
+//        delay(100);
+//        timerDelay = 30000;
+//        Serial.println(timerDelay);
+//        Serial.println("Processed!");
+//      }
+//    }
+//    else {
+//      Serial.println("WiFi Disconnected");
+//      leds4[0] = CRGB::Black;
+//      FastLED.show();
+//      delay(2000);
+//      leds4[0] = CRGB::Red;
+//      FastLED.show();
+//      Serial.println("Show Red 2");
+//      delay(500);
+//      leds4[0] = CRGB::Black;
+//      FastLED.show();
+//      return;
+//    }
+//    lastTime = millis();
+//  }
+//  else {
+//    Serial.println("isBadData");
+//    Serial.println(isBadData);
+//    if (isBadData == 1) {
+//      Serial.println("Bad data");
+//      rainbow_wave(10, 10);                                      // Speed, delta hue values.
+//      FastLED.show();
+////      for (int i = 0; i < NUM_LEDS; i++) {
+////        // Turn the LED on, then pause
+////        leds[i] = CRGB::Red;
+////      }
+////      leds4[0] = CRGB::Red;
+////      FastLED.show();
+////      delay(50);
+////      leds4[0] = CRGB::Black;
+////      for (int i = 0; i < NUM_LEDS; i++) {
+////        // Turn the LED on, then pause
+////        leds[i] = CRGB::Black;
+////      }
+////      FastLED.show();
+////      delay(50);
+////      for (int i = 0; i < NUM_LEDS; i++) {
+////        // Turn the LED on, then pause
+////        leds[i] = CRGB::Red;
+////      }
+////      leds4[0] = CRGB::Red;
+////      FastLED.show();
+////      delay(50);
+//
+//    
+//    
+//    }
+//    else {
+//      float smoothness_pts = 500;//larger=slower change in brightness  
+//      
+//      float gamma = 0.14; // affects the width of peak (more or less darkness)
+//      float beta = 0.5; // shifts the gaussian to be symmetric
+//      Serial.println("Breathing");
+//      for (int ii=0;ii<smoothness_pts;ii++){
+//        float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+//        if (pwm_val < 8.0) {
+//          pwm_val = 8.0;
+//        }
+//        FastLED.setBrightness(pwm_val);
+//        FastLED.show();
+//        delay(5);
+//      }
+//      Serial.println("Breathing");
+//      for (int ii=0;ii<smoothness_pts;ii++){
+//        float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+//        if (pwm_val < 8.0) {
+//          pwm_val = 10.0;
+//        }        
+//        FastLED.setBrightness(pwm_val);
+//        FastLED.show();
+//        delay(5);
+//      }
+//      Serial.println("Breathing");
+//      for (int ii=0;ii<smoothness_pts;ii++){
+//        float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+//        if (pwm_val < 8.0) {
+//          pwm_val = 8.0;
+//        }        
+//        FastLED.setBrightness(pwm_val);
+//        FastLED.show();
+//        delay(5);
+//      }
+//      delay(timerDelay);
+//    }    
+//  }
+//
+//}
 
 void rainbow_wave(uint8_t thisSpeed, uint8_t deltaHue) {     // The fill_rainbow call doesn't support brightness levels.
  
