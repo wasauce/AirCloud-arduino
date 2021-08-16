@@ -158,7 +158,6 @@ const int PIN_LED = 2; // D4 on NodeMCU and WeMos. GPIO2/ADC12 of ESP32. Control
 // SSID and PW for Config Portal
 String ssid = "AirCloudWIFI"; //"ESP_" + String(ESP_getChipId(), HEX);
 String password;
-//const char* password = "aircloud";
 
 // SSID and PW for your Router
 String Router_SSID;
@@ -218,6 +217,8 @@ bool initialConfig = false;
 // You'll loose the feature of dynamically changing from DHCP to static IP, or vice versa
 // You have to explicitly specify false to disable the feature.
 //#define USE_STATIC_IP_CONFIG_IN_CP          false
+#define USE_STATIC_IP_CONFIG_IN_CP          false
+
 
 // Use false to disable NTP config. Advisable when using Cellphone, Tablet to access Config Portal.
 // See Issue 23: On Android phone ConfigPortal is unresponsive (https://github.com/khoih-prog/ESP_WiFiManager/issues/23)
@@ -290,6 +291,7 @@ IPAddress APStaticSN  = IPAddress(255, 255, 255, 0);
 
 #include <ESPAsync_WiFiManager.h>              //https://github.com/khoih-prog/ESPAsync_WiFiManager
 
+
 #define HTTP_PORT     80
 
 // AirCloud Imports and Prep
@@ -298,11 +300,10 @@ IPAddress APStaticSN  = IPAddress(255, 255, 255, 0);
 #include <HTTPClient.h>
 
 //Your Domain name with URL path or IP address with path
-const char* serverName = "http://us-central1-aircloud-300705.cloudfunctions.net/hello_world?pqid=87575"; //69509
+const char* serverName = "http://us-central1-aircloud-300705.cloudfunctions.net/hello_world?pqid=35433"; //69509
 
-
-const char* testtest_ssid = "Unit 504";
-const char* testtest_password = "3.141504";
+char serverNameBase[] = "http://us-central1-aircloud-300705.cloudfunctions.net/hello_world?pqid="; //69509
+String serverNameCombinedDone;
 
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
@@ -314,9 +315,8 @@ unsigned long lastTime = 0;
 // Set timer to 30 seconds (30000)
 unsigned long timerDelay = 30000;
 bool isBadData = 0;
+bool isTimeOutMax = 0;
 
-String sensorReadings;
-float sensorReadingsArr[3];
 
 #include <FastLED.h>
 
@@ -821,16 +821,11 @@ void saveConfigData()
 
 String httpGETRequest(const char* serverName) {
   HTTPClient http;
-  WiFiClient client;
-
-  Serial.print(F("\nCreating new WiFi client object : "));
-  Serial.println(client? F("OK") : F("failed"));
 
   Serial.println(serverName);
 
-
   // Your Domain name with URL path or IP address with path
-  http.begin(client, serverName);
+  http.begin(serverName);
   
   // Send HTTP POST request
   int httpResponseCode = http.GET();
@@ -838,7 +833,6 @@ String httpGETRequest(const char* serverName) {
   Serial.println(httpResponseCode);
 
   Serial.println( http.errorToString(httpResponseCode) );
-
   String payload = "{}"; 
   
   if (httpResponseCode>0) {
@@ -849,6 +843,11 @@ String httpGETRequest(const char* serverName) {
   else {
     Serial.print("Error code: ");
     Serial.println(httpResponseCode);
+    if (httpResponseCode == -11) {
+      Serial.print("negative 11");
+      Serial.print("negative 11");
+      payload = "TIMEOUT";
+    }
   }
   // Free resources
   http.end();
@@ -857,21 +856,321 @@ String httpGETRequest(const char* serverName) {
 }
 
 
+void breathe()
+{
+  float smoothness_pts = 500;//larger=slower change in brightness  
+  
+  float gamma = 0.14; // affects the width of peak (more or less darkness)
+  float beta = 0.5; // shifts the gaussian to be symmetric
+  Serial.println("Breathing");
+  for (int ii=0;ii<smoothness_pts;ii++){
+    float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+    if (pwm_val < 8.0) {
+      pwm_val = 8.0;
+    }
+    FastLED.setBrightness(pwm_val);
+    FastLED.show();
+    delay(5);
+  }
+  Serial.println("Breathing");
+  for (int ii=0;ii<smoothness_pts;ii++){
+    float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+    if (pwm_val < 8.0) {
+      pwm_val = 10.0;
+    }        
+    FastLED.setBrightness(pwm_val);
+    FastLED.show();
+    delay(5);
+  }
+  Serial.println("Breathing");
+  for (int ii=0;ii<smoothness_pts;ii++){
+    float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+    if (pwm_val < 8.0) {
+      pwm_val = 8.0;
+    }        
+    FastLED.setBrightness(pwm_val);
+    FastLED.show();
+    delay(5);
+  }
+}
+
+// Allocate the JSON document
+//
+// Inside the brackets, 200 is the capacity of the memory pool in bytes.
+// Don't forget to change this value to match your JSON document.
+// Use arduinojson.org/v6/assistant to compute the capacity.
+StaticJsonDocument<275> doc;
+
 void aircloudDisplay()
 {
+  Serial.println("aircloudDisplay - serverNameCombinedDone");
+  Serial.println(serverNameCombinedDone);
+
   Serial.println(serverName);
-  sensorReadings = httpGETRequest(serverName);
+  String sensorReadings = httpGETRequest(serverName);
   Serial.println("sensorReadings");
   Serial.println(sensorReadings);
 
+  if (sensorReadings == "TIMEOUT") {
+    if (isTimeOutMax) {
+      sensorReadings == "{}";
+    }
+    else {
+      isTimeOutMax = 1;
+      Serial.println("SensorReadings are TIMEOUT sp we will attempt to re-fetch");
+      Serial.println("TimeoutCount is acceptable");
+      timerDelay = 5000;
+      return;      
+    }
+  }
+
+  if (sensorReadings == "{}") {
+    Serial.println("SensorReadings are {} - so bad data.");
+    leds4[0] = CRGB::Black;
+    FastLED.show();
+    delay(2000);
+    leds4[0] = CRGB::Red;
+    FastLED.show();
+    Serial.println("Show Red 1");
+    delay(500);
+    Serial.println("Setting isBadData to 1");
+    isBadData = 1;
+    isTimeOutMax = 0;
+
+    leds3[0] = CRGB::Black;
+    leds4[0] = CRGB::Red;
+    timerDelay = 5000;
+    return;
+  }
+
+
+  // StaticJsonDocument<N> allocates memory on the stack, it can be
+  // replaced by DynamicJsonDocument which allocates in the heap.
+  //
+  // DynamicJsonDocument doc(200);
+
+  // JSON input string.
+  //
+  // Using a char[], as shown here, enables the "zero-copy" mode. This mode uses
+  // the minimal amount of memory because the JsonDocument stores pointers to
+  // the input buffer.
+  // If you use another type of input, ArduinoJson must copy the strings from
+  // the input to the JsonDocument, so you need to increase the capacity of the
+  // JsonDocument.
+
+  // Deserialize the JSON document
+  DeserializationError error = deserializeJson(doc, sensorReadings);
+
+  // Test if parsing succeeds.
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    leds4[0] = CRGB::Black;
+    FastLED.show();
+    delay(2000);
+    leds4[0] = CRGB::Red;
+    FastLED.show();
+    Serial.println("Show Red 1");
+    delay(500);
+    Serial.println("Setting isBadData to 1");
+    isBadData = 1;
+    isTimeOutMax = 0;
+    leds3[0] = CRGB::Black;
+    leds4[0] = CRGB::Red;
+    timerDelay = 5000;
+    return;
+  }
+
+  int aircloud_aqi = doc["aircloud_aqi"];
+  Serial.println("aircloud_aqi");
+  Serial.println(aircloud_aqi);
+  leds3[0] = CRGB::Green;
+  FastLED.show();
+  delay(100);
+  leds3[0] = CRGB::Purple;
+  leds4[0] = CRGB::Black;
+  FastLED.show();
+  delay(200);
+
+
+  if (aircloud_aqi >= 0) {
+    // First we want to count up to show the units.
+    // So set the leds to black
+    for (int i = 0; i < NUM_LEDS; i++) {
+      // Turn the LED on, then pause
+      leds[i] = CRGB::Black;
+    }
+    FastLED.show();
+    delay(100);
+    // Now set a color and after each we show
+    int count_remaining = aircloud_aqi;
+
+    int counting_up = 0;
+    for (int i = NUM_LEDS; i > 0; i--) {
+      Serial.println(i);
+      // Turn the LED on, then pause
+      if (count_remaining >= 0) {
+        if (counting_up < 50) {
+          int mappedValue = map(counting_up,0,50,96,64);
+          Serial.println("counting_up mappedValue");
+          Serial.println(mappedValue);
+          leds[i].setHSV( mappedValue, 255, 255);
+        }
+        else if (aircloud_aqi < 100) {
+          int mappedValue = map(counting_up,50,100,64,32);
+          Serial.println("counting_up mappedValue");
+          Serial.println(mappedValue);
+          leds[i].setHSV( mappedValue, 255, 255);
+        }
+        else if (aircloud_aqi < 150) {
+          int mappedValue = map(counting_up,100,150,32,0);
+          Serial.println("counting_up mappedValue");
+          Serial.println(mappedValue);
+          leds[i].setHSV( mappedValue, 255, 255);
+        }
+        else if (aircloud_aqi < 200) {
+          int mappedValue = map(counting_up,150,200,255,224);
+          Serial.println("counting_up mappedValue");
+          Serial.println(mappedValue);
+          leds[i].setHSV( mappedValue, 255, 255);
+        }
+        FastLED.show();
+        delay(500);
+        counting_up = counting_up + 1;
+      }
+      count_remaining = count_remaining - 1;
+    }
+    delay(10000);
+    if (aircloud_aqi < 50) {
+      Serial.println("MAPPING");
+      int mappedValue = map(aircloud_aqi,0,50,96,64);
+      Serial.println(mappedValue);
+      for (int i = 0; i < NUM_LEDS; i++) {
+          leds[i].setHSV( mappedValue, 255, 255);
+      }
+    }
+    else if (aircloud_aqi < 100) {
+      Serial.println("MAPPING");
+      int mappedValue = map(aircloud_aqi,50,100,64,32);
+      Serial.println(mappedValue);
+      for (int i = 0; i < NUM_LEDS; i++) {
+          leds[i].setHSV( mappedValue, 255, 255);
+      }
+    }
+    else if (aircloud_aqi < 150) {
+      Serial.println("MAPPING");
+      int mappedValue = map(aircloud_aqi,100,150,32,0);
+      Serial.println(mappedValue);
+      for (int i = 0; i < NUM_LEDS; i++) {
+          leds[i].setHSV( mappedValue, 255, 255);
+      }
+    }
+    else if (aircloud_aqi < 200) {
+      Serial.println("MAPPING");
+      int mappedValue = map(aircloud_aqi,150,200,255,224);
+      Serial.println(mappedValue);
+      for (int i = 0; i < NUM_LEDS; i++) {
+          leds[i].setHSV( mappedValue, 255, 255);
+      }
+    }
+    else if (aircloud_aqi < 300) {
+      Serial.println("MAPPING");
+      int mappedValue = map(aircloud_aqi,200,300,224,192);
+      Serial.println(mappedValue);
+      for (int i = 0; i < NUM_LEDS; i++) {
+          leds[i].setHSV( mappedValue, 255, 255);
+      }
+    }
+    else if (aircloud_aqi >= 300) {
+      for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB::Maroon;
+      }
+    }
+    leds3[0] = CRGB::Green;
+    leds4[0] = CRGB::Black;
+    Serial.println("Setting isBadData to 0");
+    isBadData = 0;
+    isTimeOutMax = 0;
+    FastLED.show();
+    delay(100);
+    breathe();
+    timerDelay = 60000*10;
+    Serial.println("Processed!");
+  }
+  else {
+    Serial.println("Setting isBadData to 1");
+    isBadData = 1;
+    isTimeOutMax = 0;
+    leds3[0] = CRGB::Black;
+    leds4[0] = CRGB::Red;
+    timerDelay = 5000;    
+  }
+
 }
+
+// Light up the main AirCloud LEDS and do a little warm up routine.
+void setupDance()
+{
+    // Now iterate through the various colors.
+    for (int i = 0; i < NUM_LEDS; i++) {
+      // Turn the LED on, then pause
+      leds[i] = CRGB::Green;
+    }
+    FastLED.show();
+    delay(1000);
+    // Now iterate through the various colors.
+    for (int i = 0; i < NUM_LEDS; i++) {
+      // Turn the LED on, then pause
+      leds[i] = CRGB::YellowGreen;
+    }
+    FastLED.show();
+    delay(1000);
+    // Now iterate through the various colors.
+    for (int i = 0; i < NUM_LEDS; i++) {
+      // Turn the LED on, then pause
+      leds[i] = CRGB::Red;
+    }
+    FastLED.show();
+    delay(1000);
+    // Now iterate through the various colors.
+    for (int i = 0; i < NUM_LEDS; i++) {
+      // Turn the LED on, then pause
+      leds[i] = CRGB::Purple;
+    }
+    FastLED.show();
+    delay(1000);
+    // Now iterate through the various colors.
+    for (int i = 0; i < NUM_LEDS; i++) {
+      // Turn the LED on, then pause
+      leds[i] = CRGB::Maroon;
+    }
+    FastLED.show();
+    delay(1000);  
+    // Now iterate through the various colors.
+    for (int i = 0; i < NUM_LEDS; i++) {
+      // Turn the LED on, then pause
+      leds[i] = CRGB::Black;
+    }
+    FastLED.show();
+    delay(1000);  
+    // Now do the fast move up
+    for (int j = 0; j < 256; j++) {
+      for (int i = NUM_LEDS; i >= 0; i--) {
+        // Turn the LED on, then pause
+        leds[i].setHSV( j, 255, 255);
+        FastLED.show();
+        delay(10);
+        Serial.println(j);
+      }
+      j = j + 25;
+    }  
+}
+
 
 void setup()
 {
   // put your setup code here, to run once:
   // initialize the LED digital pin as an output.
-  pinMode(PIN_LED, OUTPUT);
-
   Serial.begin(115200);
   while (!Serial);
 
@@ -885,10 +1184,12 @@ void setup()
 
   FastLED.setBrightness(MAX_BRIGHTNESS);
   // Turn the LED on, then pause
-  leds1[0] = CRGB::Green;
+  leds1[0] = CRGB::Purple;
+  leds2[0] = CRGB::Purple;
+  leds3[0] = CRGB::Purple;
+  leds4[0] = CRGB::Purple;
 
   FastLED.show();
-
 
   Serial.print(F("\nStarting Async_ConfigOnDoubleReset using ")); Serial.print(FS_Name);
   Serial.print(F(" on ")); Serial.println(ARDUINO_BOARD);
@@ -960,11 +1261,11 @@ void setup()
   AsyncWebServer webServer(HTTP_PORT);
 
 #if ( USING_ESP32_S2 || USING_ESP32_C3 )
-  ESPAsync_WiFiManager ESPAsync_wifiManager(&webServer, NULL, "AsyncConfigOnDoubleReset");
+  ESPAsync_WiFiManager ESPAsync_wifiManager(&webServer, NULL, "AirCloud");
 #else
   DNSServer dnsServer;
 
-  ESPAsync_WiFiManager ESPAsync_wifiManager(&webServer, &dnsServer, "AsyncConfigOnDoubleReset");
+  ESPAsync_WiFiManager ESPAsync_wifiManager(&webServer, &dnsServer, "AirCloud");
 #endif
 
   //set config save notify callback
@@ -1192,78 +1493,20 @@ void setup()
   Serial.print((float) (millis() - startedAt) / 1000);
   Serial.print(F(" secs more in setup(), connection result is "));
 
-  WiFi.mode(WIFI_STA); WiFi.begin(); 
-
   if (WiFi.status() == WL_CONNECTED)
   {
 
     Serial.print(F("connected. Local IP: "));
     Serial.println(WiFi.localIP());   
-    aircloudDisplay();
 
+    leds1[0] = CRGB::Green;
     leds2[0] = CRGB::Green;
+    leds3[0] = CRGB::Black;
+    leds4[0] = CRGB::Black;
     FastLED.show();
-  
-    // Now iterate through the various colors.
-    for (int i = 0; i < NUM_LEDS; i++) {
-      // Turn the LED on, then pause
-      leds[i] = CRGB::Green;
-    }
-    FastLED.show();
-    delay(2000);
-    // Now iterate through the various colors.
-    for (int i = 0; i < NUM_LEDS; i++) {
-      // Turn the LED on, then pause
-      leds[i] = CRGB::YellowGreen;
-    }
-    FastLED.show();
-    delay(2000);
-    // Now iterate through the various colors.
-    for (int i = 0; i < NUM_LEDS; i++) {
-      // Turn the LED on, then pause
-      leds[i] = CRGB::Orange;
-    }
-    FastLED.show();
-    delay(2000);
-    // Now iterate through the various colors.
-    for (int i = 0; i < NUM_LEDS; i++) {
-      // Turn the LED on, then pause
-      leds[i] = CRGB::Red;
-    }
-    FastLED.show();
-    delay(2000);
-    // Now iterate through the various colors.
-    for (int i = 0; i < NUM_LEDS; i++) {
-      // Turn the LED on, then pause
-      leds[i] = CRGB::Purple;
-    }
-    FastLED.show();
-    delay(2000);
-    // Now iterate through the various colors.
-    for (int i = 0; i < NUM_LEDS; i++) {
-      // Turn the LED on, then pause
-      leds[i] = CRGB::Maroon;
-    }
-    FastLED.show();
-    delay(2000);  
-    // Now iterate through the various colors.
-    for (int i = 0; i < NUM_LEDS; i++) {
-      // Turn the LED on, then pause
-      leds[i] = CRGB::Black;
-    }
-    FastLED.show();
-    delay(2000);  
-  
-    for (int j = 0; j < 256; j++) {
-      for (int i = NUM_LEDS; i >= 0; i--) {
-        // Turn the LED on, then pause
-        leds[i].setHSV( j, 255, 255);
-        FastLED.show();
-        delay(25);
-        Serial.println(j);
-      }
-      j = j + 25;
-    }
+
+    setupDance();
+
     Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
     timerDelay = 5000;  
   
@@ -1273,6 +1516,12 @@ void setup()
 
   //read updated parameters
   strncpy(purpleair_id, custom_purpleair_id.getValue(), sizeof(purpleair_id));
+
+  String serverNameCombined;
+  serverNameCombined = serverNameBase;
+  serverNameCombinedDone = serverNameCombined + custom_purpleair_id.getValue();
+  Serial.println("serverNameCombinedDone");
+  Serial.println(serverNameCombinedDone);
 
   //save the custom parameters to FS
   if (shouldSaveConfig)
@@ -1303,6 +1552,18 @@ void loop()
     if(WiFi.status()== WL_CONNECTED) {
       Serial.println("Loop - WIFI connected -- getting ready to run.");
       aircloudDisplay();
+      lastTime = millis();
+    }
+  }
+  else {
+    if (isBadData == 1) {
+      Serial.println("Bad data");
+      rainbow_wave(10, 10);                                      // Speed, delta hue values.
+      FastLED.show();
+    }
+    else {
+      // We can take a delay for a minute as it is not bad data. Nothing to do.
+      delay(60000);
     }
   }
 }
