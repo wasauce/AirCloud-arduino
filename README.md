@@ -6,75 +6,87 @@ Arduino_JSON - 0.1.0
 WiFi - 1.2.7
 
 
-## Setup Intstructions
+## Setup Instructions
 
 1. Gather your materials
 
-Gather your AirCloud, MicroUSB cord, Smartphone, and WiFi credentials (Like most IoT devices, AirCloud needs a non-5G network.)
+   Gather your AirCloud, MicroUSB cord, Smartphone, and WiFi credentials (Like most IoT devices, AirCloud needs a non-5G network.)
 
 2. Find the right PurpleAir ID
 
-On a laptop, go to https://www.purpleair.com/map and find the id of the PurpleAir air sensor you want the AirCloud to display.
+   On a laptop, go to https://www.purpleair.com/map and find the id of the PurpleAir air sensor you want the AirCloud to display.
 
-For my use, I found one in my neighborhood. You can see it here: https://www.purpleair.com/map?opt=1/i/mAQI/a10/cC0&select=35433#14.35/37.7596/-122.37854
+   For my use, I found one in my neighborhood. You can see it here: https://www.purpleair.com/map?opt=1/i/mAQI/a10/cC0&select=35433#14.35/37.7596/-122.37854
 
-Click on the one you want, then copy the URL -- you need to extract the ID of the sensor.
+   Click on the one you want, then copy the URL -- you need to extract the ID of the sensor.
 
-Using the URL above, the sensor ID is 35433 -- see it comes after the `select=` in the URL.
+   Using the URL above, the sensor ID is 35433 -- see it comes after the `select=` in the URL.
 
-Write this sensor ID number down. You will need it in step 6.
+   Write this sensor ID number down. You will need it in step 6.
 
-If you have problems, call me -- we will figure it out together.
+   If you have problems, call me -- we will figure it out together.
 
 3. Power Up
 
-Connect the USB cable to the AirCloud and to a power source.
+   Connect the USB cable to the AirCloud and to a power source.
 
-The AirCloud should now light up with 4 purple lights.
+   The AirCloud should now light up with 4 purple lights.
 
+   <Photo>
 
-<Photo>
+4. Connect to Wifi
 
-5. Connect to Wifi
+   Pull out your smartphone, go to the settings and go to where you select your WiFi network.
 
-Pull out your smartphone, go to the settings and go to where you select your WiFi network.
+   You want to connect to the WiFi network called "AIRCLOUDWIFI". The password is: aircloud
 
-You want to connect to the WiFi network called "AIRCLOUDWIFI". The password is: aircloud
+   After connecting, a pop-up dialog should appear. This is where you will select what WiFi network you want to connect the PCB to, and set the which sensor ID.
 
-After connecting, a pop-up dialog should appear. This is where you will select what WiFi network you want to connect the PCB to, and set the which sensor ID.
+   From the list of Wifi networks you see, select your WIFi network (again -- non-5G) and put in your WiFi password. To be clear you are giving this information to the AirCloud -- not to the AirCloud's servers.
 
-From the list of Wifi networks you see, select your WIFi network (again -- non-5G) and put in your WiFi password. To be clear you are giving this information to the AirCloud -- not to the AirCloud's servers.
+   You will input this information twice.
 
-You will input this information twice.
+   Then take the PurpleAir sensor ID -- from step 2 -- and type it in in the XYZ field.
 
-Then take the PurpleAir sensor ID -- from step 2 -- and type it in in the XYZ field.
+   Then hit submit.
 
-Then hit submit.
+   <Screenshot>
 
-<Screenshot>
+   The pop-up dialog should now dismiss.
 
-The pop-up dialog should now dismiss.
+   The AirCloud will attempt to connect to Wifi and boot up.
 
-The AirCloud will attempt to connect to Wifi and boot up.
+   If it fails to connect:
 
-If it fails to connect:
+   XXX
 
-XXX
+   If it succeeds, your should see the cloud light up
 
-If it succeeds, your should see the cloud light up
-
-<GIF>
-
-
-See a full video of the setup process here:
-
-<VIDEO OF FULL SETUP>
+   <GIF>
 
 
-6. All Done!
+   See a full video of the setup process here:
+
+   << IDEO OF FULL SETUP>
+
+5. All Done!
+
+   The AirCloud will now have the top two lights (Power and Wifi) light up. The other 2 will change to black. The Cloud will now do it's Setup Dance and walk through some colors. Then, if all things are working, you should see it start to count up to the current AQI from your SensorID.
 
 
-The AirCloud will now have the top two lights (Power and Wifi) light up. The other 2 will change to black. The Cloud will now do it's Setup Dance and walk through some colors. Then, if all things are working, you should see it start to count up to the current AQI from your SensorID.
+
+
+
+-------------
+
+
+
+-------------
+
+
+
+# FAQs
+
 
 
 ## Update Interval
@@ -88,29 +100,31 @@ You will see the Data light turn purple, then the cloud will go black, and then 
 
 ## What it looks like (Explain the different colors)
 
-### High Level:
+### 	High Level:
 
 
 
-### Setup Dance
+### 	Setup Dance
 
 
 
-### Status Lights (left hand side)
+### 	Status Lights (left hand side)
 
 
 
-### Counting up
+### 	Counting up
 
 
 
-### Breathing
+### 	Breathing
 
 
 
 ### Different colors of the cloud
 
 AQI  color mapping.
+
+
 
 ### Rainbow Cloud / Moving Rainbow Cloud
 
@@ -128,9 +142,11 @@ AQI  color mapping.
 
 <Photo>
 
-<Video of turning it on>
+<< ideo of turning it on>
+
 
 Are you changing locations and going to need to connect to a new Wifi network? If so, read about how to Reset your AirCloud.
+
 
 
 ## How to Reset your AirCloud / How to change Wifi Credentials / How to change PurpleAir Ids
@@ -141,6 +157,8 @@ Are you changing locations and going to need to connect to a new Wifi network? I
 
 <Photo>
 
-<Video of a reset>
+<< ideo of a reset>
+
 
 You know you have succeed in resetting if the 4 status lights on the left hand side are purple.
+
