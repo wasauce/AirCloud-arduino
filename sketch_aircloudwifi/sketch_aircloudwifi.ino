@@ -304,6 +304,7 @@ const char* serverName = "http://us-central1-aircloud-300705.cloudfunctions.net/
 
 char serverNameBase[] = "http://us-central1-aircloud-300705.cloudfunctions.net/hello_world?pqid="; //69509
 String serverNameCombinedDone;
+String purpleairPQIDDone;
 
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
@@ -826,6 +827,9 @@ String httpGETRequest(const char* serverName) {
 
   // Your Domain name with URL path or IP address with path
   http.begin(serverName);
+
+  // set the timeout
+  http.setTimeout(10000);
   
   // Send HTTP POST request
   int httpResponseCode = http.GET();
@@ -907,7 +911,8 @@ void aircloudDisplay()
   Serial.println(serverNameCombinedDone);
 
   Serial.println(serverName);
-  String sensorReadings = httpGETRequest(serverName);
+  const char* serverNameCombinedDoneChar = serverNameCombinedDone.c_str();
+  String sensorReadings = httpGETRequest(serverNameCombinedDoneChar);
   Serial.println("sensorReadings");
   Serial.println(sensorReadings);
 
@@ -980,6 +985,13 @@ void aircloudDisplay()
     timerDelay = 5000;
     return;
   }
+
+  Serial.println("purpleairPQIDDone");
+  Serial.println(purpleairPQIDDone);
+
+  String aircloud_pqid = doc["id"];
+  Serial.println("aircloud_pqid");
+  Serial.println(aircloud_pqid);
 
   int aircloud_aqi = doc["aircloud_aqi"];
   Serial.println("aircloud_aqi");
@@ -1091,6 +1103,11 @@ void aircloudDisplay()
     Serial.println("Setting isBadData to 0");
     isBadData = 0;
     isTimeOutMax = 0;
+
+    if (aircloud_pqid != purpleairPQIDDone) {
+      Serial.println("They are NOT equal.");
+      leds3[0] = CRGB::Yellow;
+    }
     FastLED.show();
     delay(100);
     breathe();
@@ -1522,6 +1539,10 @@ void setup()
   serverNameCombinedDone = serverNameCombined + custom_purpleair_id.getValue();
   Serial.println("serverNameCombinedDone");
   Serial.println(serverNameCombinedDone);
+
+  purpleairPQIDDone = custom_purpleair_id.getValue();
+  Serial.println("purpleairPQIDDone");
+  Serial.println(purpleairPQIDDone);
 
   //save the custom parameters to FS
   if (shouldSaveConfig)
