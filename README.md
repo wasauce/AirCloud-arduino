@@ -2,7 +2,7 @@
 
 
 
-![AirCloudProduction](/Users/wferrell/Desktop/AirCloudProduction.png)
+![AirCloudProduction](https://user-images.githubusercontent.com/41729/130364989-d0984486-b9fb-4146-8b6d-ec51d1f5bc67.png)
 
 
 
@@ -40,7 +40,8 @@
 
    The AirCloud should now light up with 4 purple lights.
 
-   ![IMG_1376](/Users/wferrell/Downloads/IMG_1376.png)
+   ![IMG_1376](https://user-images.githubusercontent.com/41729/130365055-9d876e0d-0a79-4687-b868-61872e68e190.jpeg)
+
 
    
 
@@ -52,7 +53,7 @@
 
    
 
-   ![IMG_1377](/Users/wferrell/Downloads/IMG_1377.PNG)
+![IMG_1377](https://user-images.githubusercontent.com/41729/130365071-d6f0535c-bbac-4220-8b2b-1c02771b647b.PNG)
 
    
 
@@ -60,7 +61,8 @@
 
    
 
-   ![IMG_1378](/Users/wferrell/Downloads/IMG_1378.PNG)
+   ![IMG_1378](https://user-images.githubusercontent.com/41729/130365089-8e4b590c-4c31-4d48-a6c1-2ad70a828a18.PNG)
+
 
    
 
@@ -75,8 +77,7 @@
    Then hit `Save`
 
    
-
-   ![IMG_1379](/Users/wferrell/Downloads/IMG_1379.PNG)
+   ![IMG_1379](https://user-images.githubusercontent.com/41729/130365096-8f7badaf-5816-411b-83d1-556790dbcfe6.PNG)
 
    
 
@@ -167,9 +168,7 @@ If your AirCloud is restarting frequently (i.e. goes black, and does the setupDa
 
 ### 	AQI Color Mapping
 
-​		
-
-![AqiChart](/Users/wferrell/Desktop/AqiChart.png)
+   ![AqiChart](https://user-images.githubusercontent.com/41729/130365106-8eba599b-d2b4-4b62-914f-67797c90bee9.png)
 
 The > 301 AQI / Hazardous level is a VERY bright purple on the AirCloud. I hope you never see it.
 
