@@ -866,19 +866,23 @@ void breathe()
   
   float gamma = 0.14; // affects the width of peak (more or less darkness)
   float beta = 0.5; // shifts the gaussian to be symmetric
+  float topPWM = 60.0; // this is the top value that could be hit.
   Serial.println("Breathing");
   for (int ii=0;ii<smoothness_pts;ii++){
-    float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+    float pwm_val = topPWM*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
     if (pwm_val < 8.0) {
       pwm_val = 8.0;
     }
     FastLED.setBrightness(pwm_val);
     FastLED.show();
     delay(5);
+    Serial.println("pwm_val");
+    Serial.println(pwm_val);
+
   }
   Serial.println("Breathing");
   for (int ii=0;ii<smoothness_pts;ii++){
-    float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+    float pwm_val = topPWM*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
     if (pwm_val < 8.0) {
       pwm_val = 10.0;
     }        
@@ -888,7 +892,7 @@ void breathe()
   }
   Serial.println("Breathing");
   for (int ii=0;ii<smoothness_pts;ii++){
-    float pwm_val = 70.0*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
+    float pwm_val = topPWM*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
     if (pwm_val < 8.0) {
       pwm_val = 8.0;
     }        
@@ -1046,9 +1050,21 @@ void aircloudDisplay()
           Serial.println(mappedValue);
           leds[i].setHSV( mappedValue, 255, 255);
         }
+        else if (counting_up < 300) {
+          int mappedValue = map(counting_up,200,300,224,192);
+          Serial.println("counting_up mappedValue");
+          Serial.println(mappedValue);
+          leds[i].setHSV( mappedValue, 255, 255);
+        }
+        else if (counting_up >= 300) {
+          leds[i] = CRGB::DarkViolet;
+        }
         FastLED.show();
         delay(500);
         counting_up = counting_up + 1;
+        if (i == 0) {
+          i = NUM_LEDS;
+        }
       }
       count_remaining = count_remaining - 1;
     }
