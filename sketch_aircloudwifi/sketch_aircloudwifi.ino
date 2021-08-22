@@ -1018,7 +1018,7 @@ void aircloudDisplay()
     int count_remaining = aircloud_aqi;
 
     int counting_up = 0;
-    for (int i = NUM_LEDS; i > 0; i--) {
+    for (int i = NUM_LEDS; i >= 0; i--) {
       Serial.println(i);
       // Turn the LED on, then pause
       if (count_remaining >= 0) {
@@ -1028,19 +1028,19 @@ void aircloudDisplay()
           Serial.println(mappedValue);
           leds[i].setHSV( mappedValue, 255, 255);
         }
-        else if (aircloud_aqi < 100) {
+        else if (counting_up < 100) {
           int mappedValue = map(counting_up,50,100,64,32);
           Serial.println("counting_up mappedValue");
           Serial.println(mappedValue);
           leds[i].setHSV( mappedValue, 255, 255);
         }
-        else if (aircloud_aqi < 150) {
+        else if (counting_up < 150) {
           int mappedValue = map(counting_up,100,150,32,0);
           Serial.println("counting_up mappedValue");
           Serial.println(mappedValue);
           leds[i].setHSV( mappedValue, 255, 255);
         }
-        else if (aircloud_aqi < 200) {
+        else if (counting_up < 200) {
           int mappedValue = map(counting_up,150,200,255,224);
           Serial.println("counting_up mappedValue");
           Serial.println(mappedValue);
@@ -1054,7 +1054,7 @@ void aircloudDisplay()
     }
     delay(10000);
     if (aircloud_aqi < 50) {
-      Serial.println("MAPPING");
+      Serial.println("MAPPING < 50");
       int mappedValue = map(aircloud_aqi,0,50,96,64);
       Serial.println(mappedValue);
       for (int i = 0; i < NUM_LEDS; i++) {
@@ -1062,7 +1062,7 @@ void aircloudDisplay()
       }
     }
     else if (aircloud_aqi < 100) {
-      Serial.println("MAPPING");
+      Serial.println("MAPPING < 100");
       int mappedValue = map(aircloud_aqi,50,100,64,32);
       Serial.println(mappedValue);
       for (int i = 0; i < NUM_LEDS; i++) {
@@ -1070,7 +1070,7 @@ void aircloudDisplay()
       }
     }
     else if (aircloud_aqi < 150) {
-      Serial.println("MAPPING");
+      Serial.println("MAPPING < 150");
       int mappedValue = map(aircloud_aqi,100,150,32,0);
       Serial.println(mappedValue);
       for (int i = 0; i < NUM_LEDS; i++) {
@@ -1078,7 +1078,7 @@ void aircloudDisplay()
       }
     }
     else if (aircloud_aqi < 200) {
-      Serial.println("MAPPING");
+      Serial.println("MAPPING < 200");
       int mappedValue = map(aircloud_aqi,150,200,255,224);
       Serial.println(mappedValue);
       for (int i = 0; i < NUM_LEDS; i++) {
@@ -1086,7 +1086,7 @@ void aircloudDisplay()
       }
     }
     else if (aircloud_aqi < 300) {
-      Serial.println("MAPPING");
+      Serial.println("MAPPING < 300");
       int mappedValue = map(aircloud_aqi,200,300,224,192);
       Serial.println(mappedValue);
       for (int i = 0; i < NUM_LEDS; i++) {
@@ -1094,8 +1094,9 @@ void aircloudDisplay()
       }
     }
     else if (aircloud_aqi >= 300) {
+      Serial.println("MAPPING > 300");
       for (int i = 0; i < NUM_LEDS; i++) {
-        leds[i] = CRGB::Maroon;
+        leds[i] = CRGB::DarkViolet;
       }
     }
     leds3[0] = CRGB::Green;
@@ -1111,7 +1112,7 @@ void aircloudDisplay()
     FastLED.show();
     delay(100);
     breathe();
-    timerDelay = 60000*10;
+    timerDelay = 60000*1;
     Serial.println("Processed!");
   }
   else {
@@ -1172,12 +1173,12 @@ void setupDance()
     delay(1000);  
     // Now do the fast move up
     for (int j = 0; j < 256; j++) {
+      Serial.println(j);
       for (int i = NUM_LEDS; i >= 0; i--) {
         // Turn the LED on, then pause
         leds[i].setHSV( j, 255, 255);
         FastLED.show();
         delay(10);
-        Serial.println(j);
       }
       j = j + 25;
     }  
