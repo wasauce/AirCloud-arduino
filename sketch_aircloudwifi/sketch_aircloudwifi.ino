@@ -866,7 +866,7 @@ void breathe()
   
   float gamma = 0.14; // affects the width of peak (more or less darkness)
   float beta = 0.5; // shifts the gaussian to be symmetric
-  float topPWM = 60.0; // this is the top value that could be hit.
+  float topPWM = 50.0; // this is the top value that could be hit.
   Serial.println("Breathing");
   for (int ii=0;ii<smoothness_pts;ii++){
     float pwm_val = topPWM*(exp(-(pow(((ii/smoothness_pts)-beta)/gamma,2.0))/2.0));
@@ -1109,12 +1109,58 @@ void aircloudDisplay()
           leds[i].setHSV( mappedValue, 255, 255);
       }
     }
-    else if (aircloud_aqi >= 300) {
-      Serial.println("MAPPING > 300");
+    else if (aircloud_aqi < 400) {
+      Serial.println("MAPPING < 400");
       for (int i = 0; i < NUM_LEDS; i++) {
         leds[i] = CRGB::DarkViolet;
       }
+      // Set the bottom row, white
+      for (int i = NUM_LEDS-14; i < NUM_LEDS; i++) {
+        leds[i] = CRGB::WhiteSmoke;
+      }
     }
+    else if (aircloud_aqi >= 400) {
+      Serial.println("MAPPING >= 400");
+      for (int i = 0; i < NUM_LEDS; i++) {
+        leds[i] = CRGB::DarkViolet;
+      }
+      // Set the bottom row, white
+      for (int i = NUM_LEDS-14; i < NUM_LEDS; i++) {
+        leds[i] = CRGB::WhiteSmoke;
+      }
+      // Set the rest of the rim, white
+      leds[0] = CRGB::WhiteSmoke;
+      leds[1] = CRGB::WhiteSmoke;
+      leds[2] = CRGB::WhiteSmoke;
+      leds[5] = CRGB::WhiteSmoke;
+      leds[6] = CRGB::WhiteSmoke;
+      leds[11] = CRGB::WhiteSmoke;
+      leds[12] = CRGB::WhiteSmoke;
+      leds[19] = CRGB::WhiteSmoke;
+      leds[20] = CRGB::WhiteSmoke;
+      leds[21] = CRGB::WhiteSmoke;
+      leds[22] = CRGB::WhiteSmoke;
+      leds[30] = CRGB::WhiteSmoke;
+      leds[31] = CRGB::WhiteSmoke;
+      leds[43] = CRGB::WhiteSmoke;
+      leds[44] = CRGB::WhiteSmoke;
+      leds[45] = CRGB::WhiteSmoke;
+      leds[46] = CRGB::WhiteSmoke;
+      leds[62] = CRGB::WhiteSmoke;
+      leds[63] = CRGB::WhiteSmoke;
+      leds[80] = CRGB::WhiteSmoke;
+      leds[81] = CRGB::WhiteSmoke;
+      leds[98] = CRGB::WhiteSmoke;
+      leds[99] = CRGB::WhiteSmoke;
+      leds[116] = CRGB::WhiteSmoke;
+      leds[117] = CRGB::WhiteSmoke;
+      leds[134] = CRGB::WhiteSmoke;
+      leds[135] = CRGB::WhiteSmoke;
+      leds[152] = CRGB::WhiteSmoke;
+      leds[153] = CRGB::WhiteSmoke;
+      leds[168] = CRGB::WhiteSmoke;
+    }
+
     leds3[0] = CRGB::Green;
     leds4[0] = CRGB::Black;
     Serial.println("Setting isBadData to 0");
@@ -1128,7 +1174,7 @@ void aircloudDisplay()
     FastLED.show();
     delay(100);
     breathe();
-    timerDelay = 60000*1;
+    timerDelay = 60000*10; // This is where the refresh cycle is controlled.
     Serial.println("Processed!");
   }
   else {
@@ -1600,6 +1646,18 @@ void loop()
       FastLED.show();
     }
     else {
+      // Flash the data light real quick to indicate that it is alive.
+      leds3[0] = CRGB::Black;
+      FastLED.show();
+      delay(50);
+      leds3[0] = CRGB::Green;
+      FastLED.show();
+      delay(50);
+      leds3[0] = CRGB::Black;
+      FastLED.show();
+      delay(50);
+      leds3[0] = CRGB::Green;
+      FastLED.show();
       // We can take a delay for a minute as it is not bad data. Nothing to do.
       delay(60000);
     }
