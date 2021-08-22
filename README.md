@@ -188,7 +188,8 @@ If you see a flashing rainbow cloud it means there is an error! If it goes away 
 
 2. Hit the reset button ONCE. The reset button is on the back. If it still does not power on, hit the reset button again after waiting 10 seconds.
 
-<Photo>
+![IMG_1408](https://user-images.githubusercontent.com/41729/130366612-08ccad07-9f00-4b14-821c-1cc715312572.jpeg)
+   Reset button in the top right.
 
 
 
@@ -201,16 +202,20 @@ Are you changing locations and going to need to connect to a new Wifi network? I
 
 1. Plug in your AirCloud
 2. Hit the reset button multiple times -- I would say hit it every 5 seconds for 20 seconds (so 4 times).
-3. Go follow the setup instructions -- starting with step XX
+3. Go follow the setup instructions -- starting with step 3
 
-<Photo>
+
+![IMG_1408](https://user-images.githubusercontent.com/41729/130366612-08ccad07-9f00-4b14-821c-1cc715312572.jpeg)
+   Reset button in the top right.
+
 
 
 
 
 You know you have succeed in resetting if the 4 status lights on the left hand side are purple.
 
-<Photo>
+   ![IMG_1376](https://user-images.githubusercontent.com/41729/130365055-9d876e0d-0a79-4687-b868-61872e68e190.jpeg)
+
 
 
 
