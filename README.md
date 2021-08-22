@@ -4,6 +4,7 @@
 
 ![AirCloudProduction](https://user-images.githubusercontent.com/41729/130364989-d0984486-b9fb-4146-8b6d-ec51d1f5bc67.png)
 
+https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-8009-93f59bd6155e.mp4
 
 
 ## Setup Instructions
@@ -148,10 +149,16 @@ If your AirCloud is restarting frequently (i.e. goes black, and does the setupDa
 
 ### 	Setup Dance
 
+https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-8009-93f59bd6155e.mp4
 
 
-### 	Status Lights (left hand side)
+### 	What do the Status Lights mean?
 
+The 4 lights on the left hand side indicate the current status. 
+Power - Green or black/blank.
+WiFi  - Green or black/blank. 
+Data  - Purple when updating. Green when data has been processed and the AirCloud updated. Yellow if the PurpleId you input is no longer available, and we are pulling data from a nearby (< 10 miles away) sensor. Black/blank when no data.
+Error - Purple when in setup mode. Otherwise, it can be red - indicating an error. The error likely means the data from the server is bad OR that the PurpleAir Id is no longer updating. Or black/blank, meaning no known errors.
 
 
 ### 	Counting up
@@ -171,11 +178,9 @@ If your AirCloud is restarting frequently (i.e. goes black, and does the setupDa
 The > 301 AQI / Hazardous level is a VERY bright purple on the AirCloud. I hope you never see it.
 
 
-
 ### Rainbow Cloud / Moving Rainbow Cloud
 
-<GIF>
-
+< v ideo> 
 
 
 If you see a flashing rainbow cloud it means there is an error! If it goes away after a few seconds or a couple of minutes -- it probably means the server was down and has come back online. You can email me and I can try to remotely debug.
