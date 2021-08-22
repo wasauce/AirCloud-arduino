@@ -131,7 +131,9 @@ https://youtu.be/4pnXt1TztCo
 
 The AirCloud updates every 10 minutes.
 
-You will see the Data light turn purple, then the cloud will go black, and then it will count up 1 LED per AQI PM2.5 value. So if the PM2.5 is 50, 50 lights will light up. If AQI is 500 -- the full cloud will light up. There are 183 LEDs in the cloud -- so if the AQI is > 183 -- it will count up to 183 and then change colors to the final value. If the AQI is > 183 you are already in trouble.
+You will see the Data light turn purple, then the cloud will go black, and then it will count up 1 LED per AQI PM2.5 value. So if the PM2.5 is 50, 50 lights will light up. If AQI is 
+
+, the system will count up cloud will light up as there are 183 LEDs in the cloud. If the AQI is > 183 -- it will count up to 183, then start counting again. After it finishes and then change colors to the final value. If the AQI is > 183 you are already in trouble.
 
 
 
@@ -155,17 +157,26 @@ https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-800
 ### 	What do the Status Lights mean?
 
 The 4 lights on the left hand side indicate the current status. 
+
 Power - Green or black/blank.
+
 WiFi  - Green or black/blank. 
-Data  - Purple when updating. Green when data has been processed and the AirCloud updated. Yellow if the PurpleId you input is no longer available, and we are pulling data from a nearby (< 10 miles away) sensor. Black/blank when no data.
+
+Data  - Purple when updating. Green when data has been processed and the AirCloud updated. Yellow if the PurpleId you input is no longer available, and we are pulling data from a nearby (< 10 miles away) sensor. Black/blank when no data. The data light will also flash green every ~1 minute to let you know the board is alive.
+
 Error - Purple when in setup mode. Otherwise, it can be red - indicating an error. The error likely means the data from the server is bad OR that the PurpleAir Id is no longer updating. Or black/blank, meaning no known errors.
 
 
 ### 	Counting up
 
+When new AQI data is received, the AirCloud will count up, 1 LED per AQI. This should happen every 10 minutes. This way you can get a better idea of the real AQI -- not just the color.
+
+The AirCloud is 183 LEDs. If the AQI is > 183, the board will restart its
 
 
 ### 	Breathing
+
+
 
 
 
