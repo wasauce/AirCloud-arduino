@@ -2,8 +2,9 @@
 
 
 
-![AirCloudProduction](/Users/wferrell/Desktop/AirCloudProduction.png)
+![AirCloudProduction](https://user-images.githubusercontent.com/41729/130364989-d0984486-b9fb-4146-8b6d-ec51d1f5bc67.png)
 
+https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-8009-93f59bd6155e.mp4
 
 
 ## Setup Instructions
@@ -40,7 +41,8 @@
 
    The AirCloud should now light up with 4 purple lights.
 
-   ![IMG_1376](/Users/wferrell/Downloads/IMG_1376.png)
+   ![IMG_1376](https://user-images.githubusercontent.com/41729/130365055-9d876e0d-0a79-4687-b868-61872e68e190.jpeg)
+
 
    
 
@@ -52,7 +54,7 @@
 
    
 
-   ![IMG_1377](/Users/wferrell/Downloads/IMG_1377.PNG)
+   ![IMG_1377](https://user-images.githubusercontent.com/41729/130365071-d6f0535c-bbac-4220-8b2b-1c02771b647b.PNG)
 
    
 
@@ -60,7 +62,8 @@
 
    
 
-   ![IMG_1378](/Users/wferrell/Downloads/IMG_1378.PNG)
+   ![IMG_1378](https://user-images.githubusercontent.com/41729/130365089-8e4b590c-4c31-4d48-a6c1-2ad70a828a18.PNG)
+
 
    
 
@@ -75,8 +78,7 @@
    Then hit `Save`
 
    
-
-   ![IMG_1379](/Users/wferrell/Downloads/IMG_1379.PNG)
+   ![IMG_1379](https://user-images.githubusercontent.com/41729/130365096-8f7badaf-5816-411b-83d1-556790dbcfe6.PNG)
 
    
 
@@ -96,16 +98,14 @@
 
    If it succeeds, your should see the cloud light up:
 
-   <GIF>
 
-   
+https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-8009-93f59bd6155e.mp4
 
 
    See a full video of the setup process on an iPhone here:
 
 
-
-https://www.youtube.com/watch?v=Pn0w4vCewEk
+https://user-images.githubusercontent.com/41729/130365375-3e15a8ac-a207-44d5-80d4-a78e2277ef3e.mp4
 
 
 
@@ -131,7 +131,9 @@ https://youtu.be/4pnXt1TztCo
 
 The AirCloud updates every 10 minutes.
 
-You will see the Data light turn purple, then the cloud will go black, and then it will count up 1 LED per AQI PM2.5 value. So if the PM2.5 is 50, 50 lights will light up. If AQI is 500 -- the full cloud will light up. There are 183 LEDs in the cloud -- so if the AQI is > 183 -- it will count up to 183 and then change colors to the final value. If the AQI is > 183 you are already in trouble.
+You will see the Data light turn purple, then the cloud will go black, and then it will count up 1 LED per AQI PM2.5 value. So if the PM2.5 is 50, 50 lights will light up. If AQI is 
+
+, the system will count up cloud will light up as there are 183 LEDs in the cloud. If the AQI is > 183 -- it will count up to 183, then start counting again. After it finishes and then change colors to the final value. If the AQI is > 183 you are already in trouble.
 
 
 
@@ -149,14 +151,27 @@ If your AirCloud is restarting frequently (i.e. goes black, and does the setupDa
 
 ### 	Setup Dance
 
+https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-8009-93f59bd6155e.mp4
 
 
-### 	Status Lights (left hand side)
+### 	What do the Status Lights mean?
 
+The 4 lights on the left hand side indicate the current status. 
+
+Power - Green or black/blank.
+
+WiFi  - Green or black/blank. 
+
+Data  - Purple when updating. Green when data has been processed and the AirCloud updated. Yellow if the PurpleId you input is no longer available, and we are pulling data from a nearby (< 10 miles away) sensor. Black/blank when no data. The data light will also flash green every ~1 minute to let you know the board is alive.
+
+Error - Purple when in setup mode. Otherwise, it can be red - indicating an error. The error likely means the data from the server is bad OR that the PurpleAir Id is no longer updating. Or black/blank, meaning no known errors.
 
 
 ### 	Counting up
 
+When new AQI data is received, the AirCloud will count up, 1 LED per AQI. This should happen every 10 minutes. This way you can get a better idea of the real AQI -- not just the color.
+
+The AirCloud is 183 LEDs. If the AQI is > 183, the board will restart its
 
 
 ### 	Breathing
@@ -165,20 +180,18 @@ If your AirCloud is restarting frequently (i.e. goes black, and does the setupDa
 
 
 
+
+
 ### 	AQI Color Mapping
 
-​		
-
-![AqiChart](/Users/wferrell/Desktop/AqiChart.png)
+   ![AqiChart](https://user-images.githubusercontent.com/41729/130365106-8eba599b-d2b4-4b62-914f-67797c90bee9.png)
 
 The > 301 AQI / Hazardous level is a VERY bright purple on the AirCloud. I hope you never see it.
 
 
-
 ### Rainbow Cloud / Moving Rainbow Cloud
 
-<GIF>
-
+< v ideo> 
 
 
 If you see a flashing rainbow cloud it means there is an error! If it goes away after a few seconds or a couple of minutes -- it probably means the server was down and has come back online. You can email me and I can try to remotely debug.
@@ -191,7 +204,8 @@ If you see a flashing rainbow cloud it means there is an error! If it goes away 
 
 2. Hit the reset button ONCE. The reset button is on the back. If it still does not power on, hit the reset button again after waiting 10 seconds.
 
-<Photo>
+![IMG_1408](https://user-images.githubusercontent.com/41729/130366612-08ccad07-9f00-4b14-821c-1cc715312572.jpeg)
+   Reset button in the top right.
 
 
 
@@ -204,16 +218,20 @@ Are you changing locations and going to need to connect to a new Wifi network? I
 
 1. Plug in your AirCloud
 2. Hit the reset button multiple times -- I would say hit it every 5 seconds for 20 seconds (so 4 times).
-3. Go follow the setup instructions -- starting with step XX
+3. Go follow the setup instructions -- starting with step 3
 
-<Photo>
+
+![IMG_1408](https://user-images.githubusercontent.com/41729/130366612-08ccad07-9f00-4b14-821c-1cc715312572.jpeg)
+   Reset button in the top right.
+
 
 
 
 
 You know you have succeed in resetting if the 4 status lights on the left hand side are purple.
 
-<Photo>
+   ![IMG_1376](https://user-images.githubusercontent.com/41729/130365055-9d876e0d-0a79-4687-b868-61872e68e190.jpeg)
+
 
 
 
