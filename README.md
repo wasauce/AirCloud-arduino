@@ -53,7 +53,7 @@
 
    
 
-![IMG_1377](https://user-images.githubusercontent.com/41729/130365071-d6f0535c-bbac-4220-8b2b-1c02771b647b.PNG)
+   ![IMG_1377](https://user-images.githubusercontent.com/41729/130365071-d6f0535c-bbac-4220-8b2b-1c02771b647b.PNG)
 
    
 
@@ -97,16 +97,14 @@
 
    If it succeeds, your should see the cloud light up:
 
-   <GIF>
 
-   
+https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-8009-93f59bd6155e.mp4
 
 
    See a full video of the setup process on an iPhone here:
 
 
-
-https://www.youtube.com/watch?v=Pn0w4vCewEk
+https://user-images.githubusercontent.com/41729/130365375-3e15a8ac-a207-44d5-80d4-a78e2277ef3e.mp4
 
 
 
