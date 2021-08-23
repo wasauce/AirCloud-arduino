@@ -176,8 +176,9 @@ The AirCloud is 183 LEDs. If the AQI is > 183, the board will restart its
 
 ### 	Breathing
 
+After the final cloud color has been set, the AirCloud will "breathe" three times.
 
-
+Take a look:
 
 
 
@@ -186,16 +187,16 @@ The AirCloud is 183 LEDs. If the AQI is > 183, the board will restart its
 
    ![AqiChart](https://user-images.githubusercontent.com/41729/130365106-8eba599b-d2b4-4b62-914f-67797c90bee9.png)
 
-The > 301 AQI / Hazardous level is a VERY bright purple on the AirCloud. I hope you never see it.
+Generally, the AirCloud follows the colors from the API Chart. However, when the > 300 < 400 the AQI is displayed as a VERY bright purple with a white bottom. And if the AQI > 400 -- the a purple cloud with a white rim. I hope you never see it. Brown (from the AQI chart) is hard to display!
 
 
 ### Rainbow Cloud / Moving Rainbow Cloud
 
-< v ideo> 
-
 
 If you see a flashing rainbow cloud it means there is an error! If it goes away after a few seconds or a couple of minutes -- it probably means the server was down and has come back online. You can email me and I can try to remotely debug.
 
+
+< v ideo> 
 
 
 ## Turn on my AirCloud
