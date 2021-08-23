@@ -114,11 +114,6 @@ https://user-images.githubusercontent.com/41729/130365375-3e15a8ac-a207-44d5-80d
    The AirCloud will now have the top two lights (Power and Wifi) light up. The other 2 will change to black. The Cloud will now do it's Setup Dance and walk through some colors. Then, if all things are working, you should see it start to count up to the current AQI from your SensorID.
 
 
-
-https://youtu.be/4pnXt1TztCo
-
-
-
 -------------
 
 
@@ -131,10 +126,9 @@ https://youtu.be/4pnXt1TztCo
 
 The AirCloud updates every 10 minutes.
 
-You will see the Data light turn purple, then the cloud will go black, and then it will count up 1 LED per AQI PM2.5 value. So if the PM2.5 is 50, 50 lights will light up. If AQI is 
+You will see the Data light turn purple, then the cloud will go black, and then it will count up 1 LED per AQI PM2.5 value. So if the PM2.5 is 50, 50 lights will light up. If AQI is 183, the system will count up light up the entire cloud as there are 183 LEDs in the cloud. If the AQI is > 183 -- it will count up to 183, then start counting again from the bottom. After it finishes and then change colors to the final value. 
 
-, the system will count up cloud will light up as there are 183 LEDs in the cloud. If the AQI is > 183 -- it will count up to 183, then start counting again. After it finishes and then change colors to the final value. If the AQI is > 183 you are already in trouble.
-
+If the AQI is > 183 the air is already unhealthy!
 
 
 ## Restarting Frequently
@@ -180,6 +174,8 @@ After the final cloud color has been set, the AirCloud will "breathe" three time
 
 Take a look:
 
+https://user-images.githubusercontent.com/41729/130388972-d8e5ba58-8c2d-4148-a304-8b24f335384e.mp4
+
 
 
 
@@ -196,7 +192,8 @@ Generally, the AirCloud follows the colors from the API Chart. However, when the
 If you see a flashing rainbow cloud it means there is an error! If it goes away after a few seconds or a couple of minutes -- it probably means the server was down and has come back online. You can email me and I can try to remotely debug.
 
 
-< v ideo> 
+![IMG_1435](https://user-images.githubusercontent.com/41729/130391279-8b366294-0b3e-4249-b67e-b3f94031aa29.jpeg)
+
 
 
 ## Turn on my AirCloud
@@ -207,8 +204,6 @@ If you see a flashing rainbow cloud it means there is an error! If it goes away 
 
 ![IMG_1408](https://user-images.githubusercontent.com/41729/130366612-08ccad07-9f00-4b14-821c-1cc715312572.jpeg)
    Reset button in the top right.
-
-
 
 
 Are you changing locations and going to need to connect to a new Wifi network? If so, read about how to Reset your AirCloud.
@@ -224,8 +219,6 @@ Are you changing locations and going to need to connect to a new Wifi network? I
 
 ![IMG_1408](https://user-images.githubusercontent.com/41729/130366612-08ccad07-9f00-4b14-821c-1cc715312572.jpeg)
    Reset button in the top right.
-
-
 
 
 
