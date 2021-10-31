@@ -11,7 +11,7 @@ https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-800
 
 1. **Gather your materials**
 
-   Gather your AirCloud, MicroUSB cord, Smartphone, and WiFi credentials.
+   Gather your AirCloud, MicroUSB cord, Smartphone, Laptop or Desktop and WiFi credentials.
 
    Like most IoT devices, AirCloud needs a non-5G network.
 
@@ -39,7 +39,7 @@ https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-800
 
    Connect the USB cable to the AirCloud and to a power source.
 
-   The AirCloud should now light up with 4 purple lights.
+   The AirCloud should now light up with 4 purple lights. If it does not -- hit the reset button on the back (see instructions below for how to reset)
 
    ![IMG_1376](https://user-images.githubusercontent.com/41729/130365055-9d876e0d-0a79-4687-b868-61872e68e190.jpeg)
 
@@ -112,6 +112,14 @@ https://user-images.githubusercontent.com/41729/130365375-3e15a8ac-a207-44d5-80d
 5. **All Done!**
 
    The AirCloud will now have the top two lights (Power and Wifi) light up. The other 2 will change to black. The Cloud will now do it's Setup Dance and walk through some colors. Then, if all things are working, you should see it start to count up to the current AQI from your SensorID.
+   
+Note - the AirCloud shows AQI levels that have been corrected according to the US EPA correction equation. Details below and on the PurpleAir website
+
+US EPA: Courtesy of the United States Environmental Protection Agency Office of Research and Development, correction equation from their US wide study (updated version from Sept 16 2020) validated for wildfire and woodsmoke.
+0-250 ug/m3 range (>250 may underestimate true PM2.5):
+PM2.5 (µg/m³) = 0.52 x PA(cf_1) - 0.085 x RH + 5.71
+
+https://cfpub.epa.gov/si/si_public_record_Report.cfm?dirEntryId=350075&Lab=CEMM
 
 
 -------------
