@@ -23,7 +23,7 @@ https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-800
 
    For my use, I found one in my neighborhood. You can see it here: https://www.purpleair.com/map?opt=1/i/mAQI/a10/cC0&select=35433#14.35/37.7596/-122.37854
 
-   
+   Do not select a PurpleAir sensor with a black ring -- those are indoor sensors, and I purposefully don't support them.
 
    Click on the one you want, then copy the URL -- you need to extract the ID of the sensor.
 
@@ -41,7 +41,9 @@ https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-800
 
    The AirCloud should now light up with 4 purple lights. If it does not -- hit the reset button on the back (see instructions below for how to reset)
 
-   ![IMG_1376](https://user-images.githubusercontent.com/41729/130365055-9d876e0d-0a79-4687-b868-61872e68e190.jpeg)
+   ![IMG_1376](https://user-images.githubusercontent.com/417
+   
+   9/130365055-9d876e0d-0a79-4687-b868-61872e68e190.jpeg)
 
 
    
@@ -111,7 +113,9 @@ https://user-images.githubusercontent.com/41729/130365375-3e15a8ac-a207-44d5-80d
 
 5. **All Done!**
 
-   The AirCloud will now have the top two lights (Power and Wifi) light up. The other 2 will change to black. The Cloud will now do it's Setup Dance and walk through some colors. Then, if all things are working, you should see it start to count up to the current AQI from your SensorID.
+   The AirCloud will now have the top two lights (Power and Wifi) light up. The data light will later light up. The Cloud will now do it's Setup Dance and walk through some colors. Then, if all things are working, you should see it start to count up to the current AQI from your SensorID.
+   
+Note -- if you unplug your AirCloud, the settings you just input will be saved.
    
 Note - the AirCloud shows AQI levels that have been corrected according to the US EPA correction equation. Details below and on the PurpleAir website
 
