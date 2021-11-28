@@ -37,7 +37,7 @@ https://user-images.githubusercontent.com/41729/130365437-9f895091-fe3f-44fe-800
 
 3. **Power Up**
 
-   Connect the USB cable to the AirCloud and to a power source.
+   Connect the USB cable to the AirCloud and to a power source. You may seem some random set of LEDs flash in the cloud. This is normal.
 
    The AirCloud should now light up with 4 purple lights. If it does not -- hit the reset button on the back (see instructions below for how to reset). Most of you will need to hit the reset button.
 
