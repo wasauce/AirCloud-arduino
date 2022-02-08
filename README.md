@@ -248,6 +248,8 @@ You know you have succeed in resetting if the 4 status lights on the left hand s
 This repository has the arduino code running on the AirCloud. Please feel free to modify it as you wish! I'd love any and all PRs with improvements.
 
 
+Use  ExpressesIf — version 1.0.6 - Anything more recent will not work.
+
 
 You will of course need Arudino and then you will need to install the following libraries done through the Library Manager:
 
